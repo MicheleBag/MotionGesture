@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">MotionGesture</string>
+    <string name="shake">Shake</string>
+    <string name="flip">Flip</string>
+    <string name="flip_up">Flip up</string>
+    <string name="pick_up">Pick up</string>
+</resources>

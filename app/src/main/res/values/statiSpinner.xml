@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+    <string-array name="azioniPossibili">
+        <item>Nessun azione</item>
+        <item>Google Assistant</item>
+        <item>Non disturbare on</item>
+        <item>Non disturbare off</item>
+        <item>Accendi schermo</item>
+    </string-array>
+</resources>

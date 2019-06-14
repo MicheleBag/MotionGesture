@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+
+    <ImageView
+        android:id="@+id/header2"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:scaleType="fitXY"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/header"
+        tools:layout_editor_absoluteX="17dp" />
+
+    <TextView
+        android:id="@+id/gesture2"
+        android:layout_width="93dp"
+        android:layout_height="30dp"
+        android:layout_marginStart="168dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="1dp"
+        android:layout_weight="1"
+        android:text="Gesture"
+        android:textColor="@color/colorPrimary"
+        android:textSize="24dp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/scrollView2"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/header2"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <TextView
+        android:id="@+id/action2"
+        android:layout_width="90dp"
+        android:layout_height="30dp"
+        android:layout_marginStart="102dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="231dp"
+        android:layout_marginBottom="1dp"
+        android:layout_weight="1"
+        android:text="Action"
+        android:textAlignment="center"
+        android:textColor="@color/colorPrimary"
+        android:textSize="24dp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/scrollView2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/gesture2"
+        app:layout_constraintTop_toBottomOf="@+id/header2"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <ScrollView
+        android:id="@+id/scrollView2"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:layout_marginTop="11dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/action2"
+        android:padding="0dp">
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            >
+
+            <LinearLayout
+                android:id="@+id/linearLayout_flipdown"
+                android:layout_width="340dp"
+                android:layout_height="52dp"
+                android:layout_marginStart="204dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginEnd="187dp"
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/linearLayout_flipup">
+
+                <TextView
+                    android:id="@+id/textView_flipdown"
+                    android:layout_width="70dp"
+                    android:layout_height="44dp"
+                    android:text="Flip down"
+                    android:textSize="18sp" />
+
+                <Switch
+                    android:id="@+id/switch_flipdown"
+                    android:layout_width="61dp"
+                    android:layout_height="31dp" />
+
+                <Spinner
+                    android:id="@+id/spinner_flipdown"
+                    android:layout_width="200dp"
+                    android:layout_height="43dp"
+                    android:entries="@array/azioniPossibili"
+                    android:textAlignment="center" />
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/linearLayout_wave"
+                android:layout_width="340dp"
+                android:layout_height="52dp"
+                android:layout_marginStart="204dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginEnd="187dp"
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/linearLayout_proximity">
+
+                <TextView
+                    android:id="@+id/textView_wave"
+                    android:layout_width="70dp"
+                    android:layout_height="37dp"
+                    android:layout_weight="0"
+                    android:text="Wave"
+                    android:textSize="18sp" />
+
+                <Switch
+                    android:id="@+id/switch_wave"
+                    android:layout_width="61dp"
+                    android:layout_height="31dp" />
+
+                <Spinner
+                    android:id="@+id/spinner_wave"
+                    android:layout_width="200dp"
+                    android:layout_height="43dp"
+                    android:entries="@array/azioniPossibili"
+                    android:textAlignment="center" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/linearLayout_flipup"
+                android:layout_width="340dp"
+                android:layout_height="52dp"
+                android:layout_marginStart="204dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginEnd="187dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/linearLayout_shake">
+
+                <TextView
+                    android:id="@+id/textView_flipup"
+                    android:layout_width="70dp"
+                    android:layout_height="37dp"
+                    android:text="@string/flip_up"
+                    android:textSize="18sp" />
+
+                <Switch
+                    android:id="@+id/switch_flipup"
+                    android:layout_width="61dp"
+                    android:layout_height="31dp" />
+
+                <Spinner
+                    android:id="@+id/spinner_flipup"
+                    android:layout_width="200dp"
+                    android:layout_height="43dp"
+                    android:entries="@array/azioniPossibili"
+                    android:textAlignment="center" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/linearLayout_proximity"
+                android:layout_width="340dp"
+                android:layout_height="52dp"
+                android:layout_marginStart="204dp"
+                android:layout_marginTop="23dp"
+                android:layout_marginEnd="187dp"
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/linearLayout_wristTwist">
+
+                <TextView
+                    android:id="@+id/textView_proximity"
+                    android:layout_width="75dp"
+                    android:layout_height="37dp"
+                    android:layout_weight="0"
+                    android:text="Proximity"
+                    android:textSize="18sp" />
+
+                <Switch
+                    android:id="@+id/switch_proximity"
+                    android:layout_width="57dp"
+                    android:layout_height="31dp" />
+
+                <Spinner
+                    android:id="@+id/spinner_proximity"
+                    android:layout_width="200dp"
+                    android:layout_height="43dp"
+                    android:entries="@array/azioniPossibili"
+                    android:textAlignment="center" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/linearLayout_wristTwist"
+                android:layout_width="340dp"
+                android:layout_height="52dp"
+                android:layout_marginStart="204dp"
+                android:layout_marginTop="25dp"
+                android:layout_marginEnd="187dp"
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/linearLayout_flipdown">
+
+                <TextView
+                    android:id="@+id/textView_wristTwist"
+                    android:layout_width="70dp"
+                    android:layout_height="44dp"
+                    android:text="Wrist Twist"
+                    android:textSize="18sp" />
+
+                <Switch
+                    android:id="@+id/switch_wristTwist"
+                    android:layout_width="61dp"
+                    android:layout_height="31dp" />
+
+                <Spinner
+                    android:id="@+id/spinner_wristTwist"
+                    android:layout_width="200dp"
+                    android:layout_height="43dp"
+                    android:entries="@array/azioniPossibili"
+                    android:textAlignment="center" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/linearLayout_shake"
+                android:layout_width="340dp"
+                android:layout_height="49dp"
+                android:layout_marginStart="204dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="187dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <TextView
+                    android:id="@+id/textView_shake"
+                    android:layout_width="70dp"
+                    android:layout_height="37dp"
+                    android:text="@string/shake"
+                    android:textSize="18sp" />
+
+                <Switch
+                    android:id="@+id/switch_shake"
+                    android:layout_width="61dp"
+                    android:layout_height="31dp" />
+
+                <Spinner
+                    android:id="@+id/spinner_shake"
+                    android:layout_width="200dp"
+                    android:layout_height="43dp"
+                    android:entries="@array/azioniPossibili"
+                    android:textAlignment="center" />
+
+            </LinearLayout>
+        </android.support.constraint.ConstraintLayout>
+
+    </ScrollView>
+</android.support.constraint.ConstraintLayout>
+
