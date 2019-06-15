@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.os.PowerManager;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -29,6 +30,11 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.InterstitialAd;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -36,7 +42,7 @@ import java.util.List;
 
 /**
 DA FARE:
-
+ -Testare ads
  -Detector e service delle gesture:
         -proximity *da decidere se riaggiungere o meno*
         -ottimizzare wristtwist ---> da testare
@@ -51,11 +57,9 @@ DA FARE:
         - check licenza valida -----> Google Firebase?
 
 ULTIMA COSA FATTA:
-    -Correzione pickUp
-    -aggiunto controllo schermo acceso in pickupdetector
-    -tutorial
     -Redirect alla recensione
     -Check permessi restrizioni background all'avvio e allo start dei services
+    -Added ads interstitial after enabling shake service
 */
 
 
@@ -100,6 +104,9 @@ public class MainActivity extends AppCompatActivity {
     int shortAnimationDuration;
 
     boolean bgPermission = false; //true if no background restrictions
+
+    private InterstitialAd interstitialAd;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -179,7 +186,7 @@ public class MainActivity extends AppCompatActivity {
         pickupManager();
 
 
-        /*TUTORIAL*/
+        /**TUTORIAL*/
         LayoutInflater inflater = (LayoutInflater)
                 getSystemService(LAYOUT_INFLATER_SERVICE);
         contentView = inflater.inflate(R.layout.activity_tutorial, null);
@@ -189,7 +196,36 @@ public class MainActivity extends AppCompatActivity {
         shortAnimationDuration = getResources().getInteger(
                 android.R.integer.config_shortAnimTime);
 
+
+        /**ADS Interstitial*/
+        // Prepare the Interstitial Ad
+        interstitialAd = new InterstitialAd(MainActivity.this);
+        // Insert the Ad Unit ID
+        interstitialAd.setAdUnitId(getString(R.string.admob_interstitial_id));
+        interstitialAd.loadAd(new AdRequest.Builder().build());
+        // Prepare an Interstitial Ad Listener
+        interstitialAd.setAdListener(new AdListener()
+        {
+            @Override
+            public void onAdClosed() {
+                // Load the next interstitial.
+                interstitialAd.loadAd(new AdRequest.Builder().build());
+            }
+        });
     }
+
+    public void displayInterstitial()
+    {
+        /*settings = getSharedPreferences("Ads", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = settings.edit();
+        int adsCount = settings.getInt("Ads", 0);*/
+
+        // If Interstitial Ads are loaded then show else show nothing.
+        if (interstitialAd.isLoaded()) {
+            interstitialAd.show();
+        }
+    }
+
 
     /**Aggiunge le impostazioni della gesture selezionata alle preferenze in modo da
      essere utilizzate dai servizi */
@@ -330,6 +366,38 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
+    /**Controlla i cambiamenti dello switch di ogni gesture e ne attiva/disattiva il servizio*/
+    public void shakeManager()
+    {
+        shakeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
+            @Override
+            public void onCheckedChanged(CompoundButton cb, boolean on) {
+                Intent intent = new Intent(MainActivity.this, ShakeService.class);
+                if (on) {
+                    //Do something when Switch button is on/checked
+                    shakeAction = shakeSpinner.getSelectedItem().toString();
+                    if (!checkDndPermission(shakeAction) || !bgPermission) {
+                        shakeSwitch.setChecked(false);
+                        bgPermission = checkBatteryRestrictions();
+                        return;
+                    }
+                    shakeSpinner.setEnabled(false);
+                    addSettings("shake", shakeAction);
+                    startService(intent);
+
+                    //ADS
+                    displayInterstitial();
+                } else {
+                    //Do something when Switch is off/unchecked
+                    shakeSpinner.setEnabled(true);
+                    stopService(intent);
+                }
+
+
+            }
+        });
+    }
+
     /**Controlla i servizi attivi e ne ripristina le impostazioni*/
     public void checkActiveServices()
     {
@@ -373,37 +441,6 @@ public class MainActivity extends AppCompatActivity {
             settings = getSharedPreferences("pickupSettings", Context.MODE_PRIVATE);
             pickupSpinner.setSelection(settings.getInt("spinnerIndex", 0));
         }
-    }
-
-    /**Controlla i cambiamenti dello switch di ogni gesture e ne attiva/disattiva il servizio*/
-    public void shakeManager()
-    {
-        shakeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
-            @Override
-            public void onCheckedChanged(CompoundButton cb, boolean on){
-                Intent intent = new Intent(MainActivity.this, ShakeService.class);
-                if(on)
-                {
-                    //Do something when Switch button is on/checked
-                    shakeAction = shakeSpinner.getSelectedItem().toString();
-                    if(!checkDndPermission(shakeAction) || !bgPermission)
-                    {
-                        shakeSwitch.setChecked(false);
-                        bgPermission = checkBatteryRestrictions();
-                        return;
-                    }
-                    shakeSpinner.setEnabled(false);
-                    addSettings("shake", shakeAction);
-                    startService(intent);
-                }
-                else
-                {
-                    //Do something when Switch is off/unchecked
-                    shakeSpinner.setEnabled(true);
-                    stopService(intent);
-                }
-            }
-        });
     }
 
     public void flipUpManager()
