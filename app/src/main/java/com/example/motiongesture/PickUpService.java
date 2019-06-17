@@ -8,10 +8,6 @@ import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.os.IBinder;
 import android.os.Vibrator;
-import android.util.Log;
-
-import com.example.motiongesture.Action;
-import com.example.motiongesture.PickUpDetector;
 
 
 public class PickUpService extends Service {

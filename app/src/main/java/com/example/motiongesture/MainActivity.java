@@ -9,12 +9,10 @@ import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -28,8 +26,6 @@ import android.widget.PopupWindow;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.Toast;
-
 
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
@@ -41,25 +37,16 @@ import java.util.Comparator;
 import java.util.List;
 
 /**
-DA FARE:
- -Testare ads
- -Detector e service delle gesture:
-        -proximity *da decidere se riaggiungere o meno*
-        -ottimizzare wristtwist ---> da testare
-        -abbassare sensibility pickup device ---> da testare
-
+TODO:
  -Tutorial iniziale ---> better design
  -Sensibility from the user
+ -ottimizzare wristtwist ---> da testare
+ -proximity *da decidere se riaggiungere o meno*
 
-    *PLAY STORE*
-    *VERISONE PRO*
-        - acquisti in-app   ------> Partita iva?
-        - check licenza valida -----> Google Firebase?
-
-ULTIMA COSA FATTA:
+ ULTIMA COSA FATTA:
     -Redirect alla recensione
     -Check permessi restrizioni background all'avvio e allo start dei services
-    -Added ads interstitial after enabling shake service
+    -Added ads interstitial after enabling any service
 */
 
 
@@ -134,16 +121,15 @@ public class MainActivity extends AppCompatActivity {
         waveSwitch = findViewById(R.id.switch_wave);
         pickupSwitch = findViewById(R.id.switch_pickup);
 
-        nameList= new ArrayList<>();    /**contiene il nome delle app installate*/
-        packageList= new ArrayList<>(); /**contiene il package name delle app
-                                          installate per un eventuale startActivity()*/
+        nameList= new ArrayList<>();    /*contiene il nome delle app installate*/
+        packageList= new ArrayList<>(); /*contiene il package name delle app installate per un eventuale startActivity()*/
 
 
-        /**Controlla le restrizioni in background*/
+        /*Controlla le restrizioni in background*/
         bgPermission = checkBatteryRestrictions();
 
-        getInstalledApps(); /** Aggiungo allo spinner le app installate nel device*/
-        checkActiveServices(); /**Check iniziale dei servizi attivi*/
+        getInstalledApps(); /* Aggiungo allo spinner le app installate nel device*/
+        checkActiveServices(); /*Check iniziale dei servizi attivi*/
 
         //GESTIONE SENSORE SHAKE
         shakeManager();
@@ -186,7 +172,7 @@ public class MainActivity extends AppCompatActivity {
         pickupManager();
 
 
-        /**TUTORIAL*/
+        /*TUTORIAL*/
         LayoutInflater inflater = (LayoutInflater)
                 getSystemService(LAYOUT_INFLATER_SERVICE);
         contentView = inflater.inflate(R.layout.activity_tutorial, null);
@@ -197,7 +183,7 @@ public class MainActivity extends AppCompatActivity {
                 android.R.integer.config_shortAnimTime);
 
 
-        /**ADS Interstitial*/
+        /*ADS Interstitial*/
         // Prepare the Interstitial Ad
         interstitialAd = new InterstitialAd(MainActivity.this);
         // Insert the Ad Unit ID
@@ -214,18 +200,67 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public void displayInterstitial()
+    /**Controlla i servizi attivi e ne ripristina le impostazioni*/
+    public void checkActiveServices()
     {
-        /*settings = getSharedPreferences("Ads", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = settings.edit();
-        int adsCount = settings.getInt("Ads", 0);*/
+        //Shake service
+        if(isMyServiceRunning(ShakeService.class))
+        {
+            shakeSwitch.setChecked(true);
+            shakeSpinner.setEnabled(false);
+            settings = getSharedPreferences("shakeSettings", Context.MODE_PRIVATE);
+            shakeSpinner.setSelection(settings.getInt("spinnerIndex", 0));
+        }
+        //FlipUp service
+        if(isMyServiceRunning(FlipUpService.class))
+        {
+            flipupSwitch.setChecked(true);
+            flipUpSpinner.setEnabled(false);
+            settings = getSharedPreferences("flipupSettings", Context.MODE_PRIVATE);
+            flipUpSpinner.setSelection(settings.getInt("spinnerIndex", 0));
+        }
+        //FlipDown service
+        if(isMyServiceRunning(FlipDownService.class)) {
+            flipdownSwitch.setChecked(true);
+            flipDownSpinner.setEnabled(false);
+            settings = getSharedPreferences("flipdownSettings", Context.MODE_PRIVATE);
+            flipDownSpinner.setSelection(settings.getInt("spinnerIndex", 0));
+        }
 
-        // If Interstitial Ads are loaded then show else show nothing.
-        if (interstitialAd.isLoaded()) {
-            interstitialAd.show();
+        //Wave service
+        if(isMyServiceRunning(WaveService.class))
+        {
+            waveSwitch.setChecked(true);
+            waveSpinner.setEnabled(false);
+            settings = getSharedPreferences("waveSettings", Context.MODE_PRIVATE);
+            waveSpinner.setSelection(settings.getInt("spinnerIndex", 0));
+        }
+        //PickUp service
+        if(isMyServiceRunning(PickUpService.class))
+        {
+            pickupSwitch.setChecked(true);
+            pickupSpinner.setEnabled(false);
+            settings = getSharedPreferences("pickupSettings", Context.MODE_PRIVATE);
+            pickupSpinner.setSelection(settings.getInt("spinnerIndex", 0));
         }
     }
 
+    /**Mostra l'ads se è pronto una volta ogni threshold call*/
+    public void displayInterstitial()
+    {
+        settings = getSharedPreferences("Ads", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = settings.edit();
+        int adsCount = settings.getInt("Ads", 0);
+        final int threshold = 3;
+        adsCount++;
+        // If Interstitial Ads are loaded then show else show nothing.
+        if (interstitialAd.isLoaded() && adsCount >= threshold) {
+            interstitialAd.show();
+            adsCount = 0;
+        }
+        editor.putInt("Ads", adsCount);
+        editor.commit();
+    }
 
     /**Aggiunge le impostazioni della gesture selezionata alle preferenze in modo da
      essere utilizzate dai servizi */
@@ -252,7 +287,6 @@ public class MainActivity extends AppCompatActivity {
      * returns true se non ci sono limitazioni*/
     public boolean checkBatteryRestrictions()
     {
-        /**Rimuove le restrizioni in background*/
         //Controlla se ha le limitazioni in background
         String myPackage = this.getPackageName();
         PowerManager pm = (PowerManager) this.getSystemService(Context.POWER_SERVICE);
@@ -357,7 +391,7 @@ public class MainActivity extends AppCompatActivity {
         if(action == "Do not disturb off" || action == "Do not disturb on")
         {
             NotificationManager mNotificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
-            if (mNotificationManager.isNotificationPolicyAccessGranted() == false) {
+            if (!mNotificationManager.isNotificationPolicyAccessGranted()) {
                 Intent intent = new Intent(android.provider.Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS);
                 this.startActivity(intent);
                 return false;
@@ -384,7 +418,6 @@ public class MainActivity extends AppCompatActivity {
                     shakeSpinner.setEnabled(false);
                     addSettings("shake", shakeAction);
                     startService(intent);
-
                     //ADS
                     displayInterstitial();
                 } else {
@@ -396,51 +429,6 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-    }
-
-    /**Controlla i servizi attivi e ne ripristina le impostazioni*/
-    public void checkActiveServices()
-    {
-        //Shake service
-        if(isMyServiceRunning(ShakeService.class))
-        {
-            shakeSwitch.setChecked(true);
-            shakeSpinner.setEnabled(false);
-            settings = getSharedPreferences("shakeSettings", Context.MODE_PRIVATE);
-            shakeSpinner.setSelection(settings.getInt("spinnerIndex", 0));
-        }
-        //FlipUp service
-        if(isMyServiceRunning(FlipUpService.class))
-        {
-            flipupSwitch.setChecked(true);
-            flipUpSpinner.setEnabled(false);
-            settings = getSharedPreferences("flipupSettings", Context.MODE_PRIVATE);
-            flipUpSpinner.setSelection(settings.getInt("spinnerIndex", 0));
-        }
-        //FlipDown service
-        if(isMyServiceRunning(FlipDownService.class)) {
-            flipdownSwitch.setChecked(true);
-            flipDownSpinner.setEnabled(false);
-            settings = getSharedPreferences("flipdownSettings", Context.MODE_PRIVATE);
-            flipDownSpinner.setSelection(settings.getInt("spinnerIndex", 0));
-        }
-
-        //Wave service
-        if(isMyServiceRunning(WaveService.class))
-        {
-            waveSwitch.setChecked(true);
-            waveSpinner.setEnabled(false);
-            settings = getSharedPreferences("waveSettings", Context.MODE_PRIVATE);
-            waveSpinner.setSelection(settings.getInt("spinnerIndex", 0));
-        }
-        //PickUp service
-        if(isMyServiceRunning(PickUpService.class))
-        {
-            pickupSwitch.setChecked(true);
-            pickupSpinner.setEnabled(false);
-            settings = getSharedPreferences("pickupSettings", Context.MODE_PRIVATE);
-            pickupSpinner.setSelection(settings.getInt("spinnerIndex", 0));
-        }
     }
 
     public void flipUpManager()
@@ -462,6 +450,8 @@ public class MainActivity extends AppCompatActivity {
                     flipUpSpinner.setEnabled(false);
                     addSettings("flipup", flipupAction);
                     startService(intent);
+                    //ADS
+                    displayInterstitial();
                 }
                 else
                 {
@@ -492,6 +482,8 @@ public class MainActivity extends AppCompatActivity {
                     flipDownSpinner.setEnabled(false);
                     addSettings("flipdown", flipdownAction);
                     startService(intent);
+                    //ADS
+                    displayInterstitial();
                 }
                 else
                 {
@@ -522,6 +514,8 @@ public class MainActivity extends AppCompatActivity {
                     waveSpinner.setEnabled(false);
                     addSettings("wave", waveAction);
                     startService(intent);
+                    //ADS
+                    displayInterstitial();
                 }
                 else
                 {
@@ -552,6 +546,8 @@ public class MainActivity extends AppCompatActivity {
                     pickupSpinner.setEnabled(false);
                     addSettings("pickup", pickupAction);
                     startService(intent);
+                    //ADS
+                    displayInterstitial();
                 }
                 else
                 {
@@ -582,6 +578,8 @@ public class MainActivity extends AppCompatActivity {
                     wristTwistSpinner.setEnabled(false);
                     addSettings("wristTwist", wristTwistAction);
                     startService(intent);
+                    //ADS
+                    displayInterstitial();
                 }
                 else
                 {
@@ -626,10 +624,7 @@ public class MainActivity extends AppCompatActivity {
 
         //ORDINO UNA LISTA SECONDARIA DI NOME IN ORDINE ALFABETICO
         sortedNameList = new ArrayList<>();
-        for (int k = 0; k < nameList.size(); k++)
-        {
-            sortedNameList.add(nameList.get(k));
-        }
+        sortedNameList.addAll(nameList);
         Collections.sort(sortedNameList, new Comparator<String>()
         {
             @Override
@@ -667,7 +662,7 @@ public class MainActivity extends AppCompatActivity {
         // Imposto il content view visibile ma trasparente, cosi da andare ad animare il crossfade
         int width = LinearLayout.LayoutParams.WRAP_CONTENT;
         int height = LinearLayout.LayoutParams.WRAP_CONTENT;
-        boolean focusable = true;
+        final boolean focusable = true;
         final PopupWindow popupWindow = new PopupWindow(contentView, width, height, focusable);
         popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
         contentView.setAlpha(0f);
