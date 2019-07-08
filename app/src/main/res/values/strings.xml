@@ -4,5 +4,8 @@
     <string name="flip">Flip</string>
     <string name="flip_up">Flip up</string>
     <string name="pick_up">Pick up</string>
-    <string name="admob_interstitial_id">ca-app-pub-3940256099942544/1033173712</string>
+    <string name="admob_interstitial_id_test">ca-app-pub-3940256099942544/1033173712</string>
+    <string name="admob_interstitial_id">ca-app-pub-5538358798439517/2690371318</string>
+    <string name="admob_app_id">ca-app-pub-5538358798439517~5747957108</string>
+
 </resources>

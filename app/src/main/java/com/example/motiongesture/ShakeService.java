@@ -27,13 +27,6 @@ public class ShakeService extends Service {
     }
 
     @Override
-    public IBinder onBind(Intent intent) {
-        // TODO: Return the communication channel to the service.
-        throw new UnsupportedOperationException("Not yet implemented");
-    }
-
-
-    @Override
     public void onCreate() {
         super.onCreate();
         v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
@@ -53,10 +46,6 @@ public class ShakeService extends Service {
             @Override
             public void onShake() {
                     v.vibrate(50);
-
-                    //Log.d("Action", shakeAction);
-                    //Log.d("Package", shakePackage);
-
                     action.action(shakeAction, shakePackage);
             }
         });
@@ -68,6 +57,12 @@ public class ShakeService extends Service {
     public void onDestroy() {
         mSensorManager.unregisterListener(mShakeDetector);
         super.onDestroy();
+    }
+
+
+    @Override
+    public IBinder onBind(Intent intent) {
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 
 }

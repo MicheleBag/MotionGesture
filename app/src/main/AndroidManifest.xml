@@ -70,7 +70,7 @@
 
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="@string/admob_interstitial_id"/>
+            android:value="@string/admob_app_id"/>
 
     </application>
 

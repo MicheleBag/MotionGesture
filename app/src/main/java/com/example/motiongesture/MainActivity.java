@@ -30,6 +30,7 @@ import android.widget.TextView;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
+import com.google.android.gms.ads.MobileAds;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -183,11 +184,12 @@ public class MainActivity extends AppCompatActivity {
                 android.R.integer.config_shortAnimTime);
 
 
-        /*ADS Interstitial*/
+        /*ADS*/
+        MobileAds.initialize(this, String.valueOf(R.string.admob_app_id));
         // Prepare the Interstitial Ad
         interstitialAd = new InterstitialAd(MainActivity.this);
         // Insert the Ad Unit ID
-        interstitialAd.setAdUnitId(getString(R.string.admob_interstitial_id));
+        interstitialAd.setAdUnitId(getString(R.string.admob_interstitial_id_test));
         interstitialAd.loadAd(new AdRequest.Builder().build());
         // Prepare an Interstitial Ad Listener
         interstitialAd.setAdListener(new AdListener()
