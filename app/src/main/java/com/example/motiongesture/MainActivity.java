@@ -617,12 +617,14 @@ public class MainActivity extends AppCompatActivity {
 
         //AGGIUNGO APP ALLA LISTA
         for (ApplicationInfo packageInfo : list) {
-            if((packageInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 1)
+            if((packageInfo.flags & ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) != 0 || (packageInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 1)
             {
                 nameList.add("" + packageInfo.loadLabel(getPackageManager()).toString());
                 packageList.add("" + packageInfo.packageName);
             }
         }
+
+
 
         //ORDINO UNA LISTA SECONDARIA DI NOME IN ORDINE ALFABETICO
         sortedNameList = new ArrayList<>();
